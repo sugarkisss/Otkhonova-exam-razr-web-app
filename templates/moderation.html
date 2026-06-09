@@ -1,0 +1,47 @@
+﻿{% extends 'base.html' %}
+{% block content %}
+<h3 class="fw-bold mb-4 text-dark">Модерация поступающих рецензий</h3>
+
+<div class="card p-3 shadow-sm border-0 bg-white">
+    {% if not reviews %}
+        <p class="text-muted fst-italic my-2 p-2">Очередь проверки пуста. Нет рецензий на рассмотрении.</p>
+    {% else %}
+    <table class="table align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Название книги</th>
+                <th>Автор рецензии</th>
+                <th>Дата добавления</th>
+                <th>Действие</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in reviews %}
+            <tr>
+                <td><strong>{{ r.book.title }}</strong></td>
+                <td>{{ r.user.last_name }} {{ r.user.first_name }}</td>
+                <td class="small text-muted">{{ r.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                <td>
+                    <a href="{{ url_for('review_view', review_id=r.id) }}" class="btn btn-sm btn-primary px-3">Рассмотреть</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</div>
+
+{% if pagination and pagination.pages > 1 %}
+<nav class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% for page_num in pagination.iter_pages() %}
+            {% if page_num %}
+                <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('moderation_list', page=page_num) }}">{{ page_num }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,31 @@
+﻿{% extends 'base.html' %}
+{% block content %}
+<div class="card p-4 shadow-sm border-0 max-width-600 mx-auto bg-white">
+    <h3 class="fw-bold">Написать рецензию</h3>
+    <p class="text-muted small">Книга: <strong>{{ book.title }}</strong></p>
+    <hr>
+    
+    <form method="POST">
+        <div class="mb-3">
+            <label class="form-label fw-bold">Оценка книги</label>
+            <select name="rating" class="form-select">
+                <option value="5" selected>5 – отлично</option>
+                <option value="4">4 – хорошо</option>
+                <option value="3">3 – удовлетворительно</option>
+                <option value="2">2 – неудовлетворительно</option>
+                <option value="1">1 – плохо</option>
+                <option value="0">0 – ужасно</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label fw-bold">Текст рецензии</label>
+            <textarea name="text" class="form-control" rows="6" required placeholder="Напишите развернутый отзыв о произведении..."></textarea>
+        </div>
+        
+        <div class="pt-2">
+            <button type="submit" class="btn btn-primary px-4">Сохранить</button>
+            <a href="{{ url_for('book_view', book_id=book.id) }}" class="btn btn-secondary">Назад</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,82 @@
+﻿/* static/css/style.css */
+/* Кастомный дизайнерский CSS-пакет для АИС «Библиотека» */
+
+/* Главный фон сайта — делаем его мягким, чтобы не резал глаза */
+body {
+    background-color: #f4f6f9 !important;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Красивая градиентная шапка (Navbar) в стиле Modern Dark */
+.navbar {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+    border-bottom: 3px solid #3b82f6; /* Тонкая синяя полоса снизу для стиля */
+}
+
+/* Стилизация карточек книг */
+.card {
+    border: none !important;
+    border-radius: 16px !important; /* Модные скругленные углы */
+    background-color: #ffffff;
+    transition: all 0.3s ease-in-out; /* Плавная анимация */
+}
+
+/* Эффект при наведении мышки на книгу — карточка слегка приподнимается */
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Красивое оформление обложек книг */
+.card img, .img-fluid {
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease;
+}
+
+.card:hover img {
+    transform: scale(1.03); /* Обложка чуть увеличивается при наведении */
+}
+
+/* Кнопки действий — делаем их более объемными */
+.btn {
+    border-radius: 8px !important;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-success {
+    background-color: #10b981 !important;
+    border: none;
+}
+.btn-success:hover {
+    background-color: #059669 !important;
+}
+
+.btn-primary {
+    background-color: #3b82f6 !important;
+    border: none;
+}
+.btn-primary:hover {
+    background-color: #2563eb !important;
+}
+
+/* Ограничение ширины для форм авторизации и отзывов, чтобы они не растягивались */
+.max-width-600 {
+    max-width: 600px;
+}
+
+/* Красивые бейджи (жанры) */
+.badge {
+    padding: 6px 12px !important;
+    border-radius: 20px !important;
+    font-weight: 500;
+    background-color: #e2e8f0 !important;
+    color: #475569 !important;
+}
+
+/* Стильный футер или подпись автора в шапке */
+.navbar-nav .text-secondary {
+    color: #cbd5e1 !important;
+    font-size: 0.85rem;
+}

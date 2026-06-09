@@ -1,0 +1,22 @@
+﻿{% extends 'base.html' %}
+{% block content %}
+<div class="card p-4 shadow-sm border-0 max-width-600 mx-auto bg-white">
+    <h3 class="fw-bold text-dark">Проверка текста рецензии</h3>
+    <hr>
+    
+    <div class="mb-3 small">
+        <p class="mb-1"><strong>Целевая книга:</strong> {{ review.book.title }}</p>
+        <p class="mb-1"><strong>Автор отзыва:</strong> {{ review.user.last_name }} {{ review.user.first_name }}</p>
+        <p class="mb-1"><strong>Выставленная оценка:</strong> <span class="text-warning fw-bold">★ {{ review.rating }} / 5</span></p>
+    </div>
+    
+    <label class="form-label fw-bold text-secondary">Текст рецензии:</label>
+    <div class="p-3 bg-light rounded border mb-4 text-dark small" style="white-space: pre-wrap;">{{ review.text }}</div>
+
+    <form method="POST" class="d-flex gap-2">
+        <button type="submit" name="action" value="approve" class="btn btn-success flex-grow-1 fw-bold">Одобрить</button>
+        <button type="submit" name="action" value="reject" class="btn btn-danger flex-grow-1 fw-bold">Отклонить</button>
+        <a href="{{ url_for('moderation_list') }}" class="btn btn-secondary">Назад</a>
+    </form>
+</div>
+{% endblock %}

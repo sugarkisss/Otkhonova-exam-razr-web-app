@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Электронная библиотека</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 shadow">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">📚 АИС «Библиотека»</a>
+            
+            <div class="navbar-nav me-auto">
+                {% if current_user.is_authenticated and current_user.role.name == 'Пользователь' %}
+                    <a class="nav-link text-light" href="{{ url_for('user_reviews') }}">Мои рецензии</a>
+                {% endif %}
+                {% if current_user.is_authenticated and current_user.role.name == 'Модератор' %}
+                    <a class="nav-link text-warning" href="{{ url_for('moderation_list') }}">Модерация рецензий</a>
+                {% endif %}
+            </div>
+
+            <div class="navbar-nav text-white align-items-center small">
+                <span class="me-4 text-secondary fst-italic">Разработчик: Отхонова Амуланга Александровна Гр: 241-371</span>
+                
+                {% if current_user.is_authenticated %}
+                    <span class="me-3 text-info">👤 {{ current_user.last_name }} {{ current_user.first_name }} ({{ current_user.role.name }})</span>
+                    <a class="btn btn-outline-danger btn-sm" href="{{ url_for('logout') }}">Выйти</a>
+                {% else %}
+                    <a class="btn btn-outline-light btn-sm" href="{{ url_for('login') }}">Войти</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+    <script>
+        // Инициализация редактора EasyMDE для полей textarea по ТЗ
+        if (document.getElementById("markdown-editor")) {
+            new EasyMDE({ element: document.getElementById("markdown-editor") });
+        }
+    </script>
+</body>
+</html>

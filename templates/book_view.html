@@ -1,0 +1,70 @@
+﻿{% extends 'base.html' %}
+{% block content %}
+
+<div class="card p-4 shadow-sm border-0 mb-4 bg-white">
+    <div class="row">
+        <div class="col-md-3 text-center text-md-start mb-3 mb-md-0">
+            {% if book.cover %}
+                <img src="{{ url_for('static', filename='covers/' + book.cover.filename) }}" class="img-fluid rounded shadow-sm w-100" style="max-height: 350px; object-fit: cover;">
+            {% else %}
+                <img src="https://via.placeholder.com/250x350?text=Нет+обложки" class="img-fluid rounded shadow-sm">
+            {% endif %}
+        </div>
+        <div class="col-md-9">
+            <h1 class="fw-bold text-dark mb-1">{{ book.title }}</h1>
+            <h5 class="text-muted mb-4">Автор: {{ book.author }}</h5>
+            
+            <div class="bg-light p-3 rounded mb-4">
+                <h6 class="fw-bold border-bottom pb-2">📋 Технические данные издания:</h6>
+                <div class="row small pt-1">
+                    <div class="col-sm-4"><strong>Издательство:</strong> {{ book.publisher }}</div>
+                    <div class="col-sm-4"><strong>Год издания:</strong> {{ book.year }} г.</div>
+                    <div class="col-sm-4"><strong>Объём:</strong> {{ book.pages }} стр.</div>
+                </div>
+            </div>
+
+            <h5 class="fw-bold">Аннотация:</h5>
+            <div id="book-description" class="p-3 border rounded bg-white text-secondary" style="white-space: pre-wrap;">{{ book.description }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="card p-4 shadow-sm border-0 bg-white">
+    <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+        <h4 class="fw-bold m-0">Рецензии пользователей</h4>
+        
+        {% if current_user.is_authenticated and not user_review %}
+            <a href="{{ url_for('review_add', book_id=book.id) }}" class="btn btn-primary btn-sm">Написать рецензию</a>
+        {% endif %}
+    </div>
+
+    {% if user_review %}
+        <div class="alert alert-light border border-info shadow-sm py-2 mb-4 small text-info">
+            📌 Вы уже отправили рецензию на эту книгу. Текущий статус модерации: <strong>{{ user_review.status.name }}</strong>
+        </div>
+    {% endif %}
+
+    {% if not reviews %}
+        <p class="text-muted fst-italic py-2">На эту книгу пока нет одобренных модератором рецензий.</p>
+    {% else %}
+        {% for r in reviews %}
+        <div class="py-3 border-bottom">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-dark">👤 {{ r.user.last_name }} {{ r.user.first_name }}</span>
+                <span class="badge bg-warning text-dark font-monospace">★ {{ r.rating }} / 5</span>
+            </div>
+            <p class="text-secondary my-2 small" style="white-space: pre-wrap;">{{ r.text }}</p>
+            <div class="text-muted style-date" style="font-size: 11px;">Дата: {{ r.created_at.strftime('%d.%m.%Y %H:%M') }}</div>
+        </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+    const descBlock = document.getElementById('book-description');
+    if (descBlock) {
+        descBlock.innerHTML = marked.parse(descBlock.innerHTML);
+    }
+</script>
+{% endblock %}
