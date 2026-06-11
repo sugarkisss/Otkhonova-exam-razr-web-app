@@ -305,6 +305,24 @@ def review_view(review_id):
         
     return render_template('review_view.html', review=review)
 
+@app.route('/delete_review/<int:review_id>', methods=['POST'])
+@login_required
+def delete_review(review_id):
+    review = Review.query.get_or_404(review_id)
+    
+    # Проверка: автор, администратор или модератор
+    # Используем current_user.role.name, так как у тебя есть связь с Role
+    is_admin_or_mod = current_user.role.name in ['Администратор', 'Модератор']
+    
+    if current_user.id == review.user_id or is_admin_or_mod:
+        db.session.delete(review)
+        db.session.commit()
+        flash('Рецензия успешно удалена!', 'success')
+    else:
+        flash('У вас нет прав для удаления этой рецензии.', 'danger')
+        
+    return redirect(url_for('book_view', book_id=review.book_id))
+
 
 # --- АВТОНАПОЛНЕНИЕ БАЗЫ SQLite ПРИ ПЕРВОМ СТАРТЕ ---
 if __name__ == '__main__':
