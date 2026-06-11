@@ -1,19 +1,29 @@
-﻿{% extends 'base.html' %}
+﻿<!-- book_view.html
+     Страница с полной информацией о книге: обложка, данные, аннотация, рецензии.
+     Здесь же кнопка "Написать рецензию" (если пользователь ещё не писал).
+     Ниже — список одобренных рецензий.
+-->
+{% extends 'base.html' %}
 {% block content %}
 
+<!-- Основная карточка книги -->
 <div class="card p-4 shadow-sm border-0 mb-4 bg-white">
     <div class="row">
+        <!-- Колонка с обложкой -->
         <div class="col-md-3 text-center text-md-start mb-3 mb-md-0">
             {% if book.cover %}
                 <img src="{{ url_for('static', filename='covers/' + book.cover.filename) }}" class="img-fluid rounded shadow-sm w-100" style="max-height: 350px; object-fit: cover;">
             {% else %}
+                <!-- Заглушка, если обложка не загружена -->
                 <img src="https://via.placeholder.com/250x350?text=Нет+обложки" class="img-fluid rounded shadow-sm">
             {% endif %}
         </div>
+        <!-- Колонка с текстовой информацией -->
         <div class="col-md-9">
             <h1 class="fw-bold text-dark mb-1">{{ book.title }}</h1>
             <h5 class="text-muted mb-4">Автор: {{ book.author }}</h5>
-            
+
+            <!-- Блок "Технические данные" (издательство, год, страницы) -->
             <div class="bg-light p-3 rounded mb-4">
                 <h6 class="fw-bold border-bottom pb-2">📋 Технические данные издания:</h6>
                 <div class="row small pt-1">
@@ -23,27 +33,32 @@
                 </div>
             </div>
 
+            <!-- Аннотация (будет преобразована из Markdown в HTML с помощью marked.js) -->
             <h5 class="fw-bold">Аннотация:</h5>
             <div id="book-description" class="p-3 border rounded bg-white text-secondary" style="white-space: pre-wrap;">{{ book.description }}</div>
         </div>
     </div>
 </div>
 
+<!-- Блок рецензий -->
 <div class="card p-4 shadow-sm border-0 bg-white">
     <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
         <h4 class="fw-bold m-0">Рецензии пользователей</h4>
-        
+
+        <!-- Показываем кнопку "Написать рецензию", если пользователь авторизован и ещё не писал отзыв -->
         {% if current_user.is_authenticated and not user_review %}
             <a href="{{ url_for('review_add', book_id=book.id) }}" class="btn btn-primary btn-sm">Написать рецензию</a>
         {% endif %}
     </div>
 
+    <!-- Если пользователь уже оставил рецензию — показываем статус (на рассмотрении/одобрена/отклонена) -->
     {% if user_review %}
         <div class="alert alert-light border border-info shadow-sm py-2 mb-4 small text-info">
             📌 Вы уже отправили рецензию на эту книгу. Текущий статус модерации: <strong>{{ user_review.status.name }}</strong>
         </div>
     {% endif %}
 
+    <!-- Список одобренных рецензий -->
     {% if not reviews %}
         <p class="text-muted fst-italic py-2">На эту книгу пока нет одобренных модератором рецензий.</p>
     {% else %}
@@ -53,14 +68,12 @@
                 <span class="fw-bold text-dark">👤 {{ r.user.last_name }} {{ r.user.first_name }}</span>
                 <span class="badge bg-warning text-dark font-monospace">★ {{ r.rating }} / 5</span>
             </div>
-            
             <p class="text-secondary my-2 small" style="white-space: pre-wrap;">{{ r.text }}</p>
-            
             <div class="d-flex justify-content-between align-items-center mt-2">
                 <small class="text-muted">Дата: {{ r.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
-                
+                <!-- Кнопка удаления рецензии (для автора, модератора и админа) -->
                 {% if current_user.is_authenticated and (current_user.id == r.user_id or current_user.role.name in ['Администратор', 'Модератор']) %}
-                    <form action="{{ url_for('delete_review', review_id=r.id) }}" method="POST" 
+                    <form action="{{ url_for('delete_review', review_id=r.id) }}" method="POST"
                         onsubmit="return confirm('Удалить эту рецензию?');" style="margin: 0;">
                         <button type="submit" class="btn btn-link btn-sm text-danger p-0 shadow-none" style="text-decoration: none;">
                             Удалить
@@ -73,12 +86,12 @@
     {% endif %}
 </div>
 
-
-
+<!-- Скрипт для преобразования Markdown в HTML (использую библиотеку marked) -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
     const descBlock = document.getElementById('book-description');
     if (descBlock) {
+        // Наш сервер отдаёт описание в Markdown, а мы превращаем в HTML на клиенте
         descBlock.innerHTML = marked.parse(descBlock.innerHTML);
     }
 </script>

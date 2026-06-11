@@ -1,6 +1,12 @@
-﻿{% extends 'base.html' %}
+﻿<!-- index.html
+     Главная страница — реестр книг с пагинацией.
+     Для каждой книги выводится миниатюра, название, автор, жанры, средний рейтинг.
+     Администратор видит кнопки "Редактировать" и "Удалить", а также "Добавить книгу" вверху.
+-->
+{% extends 'base.html' %}
 {% block content %}
 
+<!-- Заголовок и кнопка добавления (только для админа) -->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="fw-bold m-0 text-dark">Реестр книг системы</h2>
     {% if current_user.is_authenticated and current_user.role.name == 'Администратор' %}
@@ -8,10 +14,12 @@
     {% endif %}
 </div>
 
+<!-- Сетка карточек книг (две колонки на больших экранах) -->
 <div class="row row-cols-1 row-cols-lg-2 g-4">
     {% for book in books %}
     <div class="col">
         <div class="card h-100 shadow-sm border-0 p-3 d-flex flex-row">
+            <!-- Обложка (миниатюра) -->
             <div class="me-3 flex-shrink-0">
                 {% if book.cover %}
                     <img src="{{ url_for('static', filename='covers/' + book.cover.filename) }}" class="rounded shadow-sm" style="width: 110px; height: 160px; object-fit: cover;">
@@ -19,30 +27,35 @@
                     <img src="https://via.placeholder.com/110x160?text=Нет+обложки" class="rounded shadow-sm" style="width: 110px; height: 160px;">
                 {% endif %}
             </div>
-            
+
+            <!-- Основная информация -->
             <div class="d-flex flex-column flex-grow-1">
                 <h5 class="fw-bold mb-1"><a href="{{ url_for('book_view', book_id=book.id) }}" class="text-decoration-none text-dark">{{ book.title }}</a></h5>
                 <p class="text-muted small mb-2">Автор: {{ book.author }} | Год издания: {{ book.year }}</p>
-                
+
+                <!-- Жанры в виде бейджей -->
                 <div class="mb-2">
                     {% for g in book.genres %}
                         <span class="badge bg-secondary me-1">{{ g.name }}</span>
                     {% endfor %}
                 </div>
-                
+
+                <!-- Рейтинг и количество одобренных рецензий (вычислены в app.py) -->
                 <div class="mb-3 small">
                     <span class="text-warning fw-bold">⭐ {{ book.avg_rating }}</span>
                     <span class="text-muted ms-2">({{ book.reviews_count }} одобренных рецензий)</span>
                 </div>
-                
+
+                <!-- Кнопки действий -->
                 <div class="mt-auto d-flex gap-1">
                     <a href="{{ url_for('book_view', book_id=book.id) }}" class="btn btn-sm btn-info text-white">Просмотр</a>
-                    
+
                     {% if current_user.is_authenticated and current_user.role.name in ['Администратор', 'Модератор'] %}
                         <a href="{{ url_for('book_edit', book_id=book.id) }}" class="btn btn-sm btn-warning text-white">Редактировать</a>
                     {% endif %}
-                    
+
                     {% if current_user.is_authenticated and current_user.role.name == 'Администратор' %}
+                        <!-- Кнопка открывает модальное окно подтверждения удаления -->
                         <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ book.id }}">Удалить</button>
                     {% endif %}
                 </div>
@@ -50,6 +63,7 @@
         </div>
     </div>
 
+    <!-- Модальное окно для подтверждения удаления (отдельное для каждой книги) -->
     <div class="modal fade" id="deleteModal{{ book.id }}" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow">
@@ -58,7 +72,7 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body py-4 text-center">
-                    Вы уверены, что хотите удалить книгу <strong>{{"{"}}{{ book.title }}{{"}"}}</strong>?
+                    Вы уверены, что хотите удалить книгу <strong>{{ book.title }}</strong>?
                 </div>
                 <div class="modal-footer bg-light border-0">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Нет</button>
@@ -72,6 +86,7 @@
     {% endfor %}
 </div>
 
+<!-- Пагинация (переключение страниц) -->
 {% if pagination and pagination.pages > 1 %}
 <nav class="mt-5">
     <ul class="pagination justify-content-center">
